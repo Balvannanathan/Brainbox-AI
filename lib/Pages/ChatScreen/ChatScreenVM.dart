@@ -3,11 +3,23 @@ import 'package:brainbox_ai/Helpers/Utility/ErrorHandling.dart';
 import 'package:brainbox_ai/Pages/ChatScreen/ChatScreenModel.dart';
 
 class ChatScreenVM extends ChatScreenModel {
-  ChatScreenVM() {
+  ChatScreenVM(int? chatId) {
     try {
       setIsLoading(false);
 
-      setChatBO(ChatBO(chatId: 1, chatName: 'Chat Name', messages: []));
+      setChatBO(
+        ChatBO(
+          chatId: 0,
+          chatName: 'Chat Name',
+          messages: [],
+          createdAt: '',
+          updatedAt: '',
+        ),
+      );
+
+      if (chatId != null) {
+        getChatHistory(chatId);
+      }
     } on Exception catch (ex) {
       ex.logException();
     }
@@ -21,35 +33,74 @@ class ChatScreenVM extends ChatScreenModel {
 
       // Add user message to chat
       final newMessage = MessageBO(
-        messageId: (chatBO?.messages.length ?? 0) + 1,
+        messageId: (chatBO?.messages?.length ?? 0) + 1,
         question: message,
-        answer: '', // Will be filled by bot response
+        answer: '',
       );
 
       // Add message to list
-      chatBO?.messages.add(newMessage);
+      chatBO?.messages?.add(newMessage);
 
       // Simulate API call delay
-      await Future.delayed(const Duration(seconds: 5));
+      // await Future.delayed(const Duration(seconds: 5));
 
-      // Update with bot response (replace this with actual API call)
-      final index = chatBO!.messages.indexWhere(
-        (m) => m.messageId == newMessage.messageId,
+      var response = await chatService.chatWithAI(
+        message: message,
+        userId: 'user123',
+        chatId: chatBO?.chatId == 0 ? null : chatBO?.chatId,
       );
-      if (index != -1) {
-        chatBO!.messages[index] = MessageBO(
-          messageId: newMessage.messageId,
-          question: message,
-          answer:
-              'This is a sample response from the bot. Replace this with your actual API integration.',
+
+      if (response.data != null) {
+        chatBO?.messages?.removeWhere(
+          (m) => m.messageId == newMessage.messageId,
         );
+        chatBO?.messages?.addAll(response.data?.messages ?? []);
+        
+        chatBO?.chatId = response.data?.chatId ?? 0;
+        setChatBO(chatBO!);
       }
 
-      setChatBO(chatBO!);
+      // // Update with bot response (replace this with actual API call)
+      // final index = chatBO!.messages.indexWhere(
+      //   (m) => m.messageId == newMessage.messageId,
+      // );
+      // if (index != -1) {
+      //   chatBO!.messages[index] = MessageBO(
+      //     messageId: newMessage.messageId,
+      //     question: message,
+      //     answer:
+      //         response.data.
+      //   );
+      // }
 
       setIsLoading(false);
     } on Exception catch (ex) {
       setIsLoading(false);
+      ex.logException();
+    }
+  }
+
+  void getChatHistory(int chatId) async {
+    try {
+      setIsLoading(true);
+
+      var response = await chatService.getChatHistoryById(chatId: chatId);
+
+      if (response.data != null) {
+        setChatBO(response.data!);
+      }
+
+      setIsLoading(false);
+    } on Exception catch (ex) {
+      setIsLoading(false);
+      ex.logException();
+    }
+  }
+
+  void navigateBack() {
+    try {
+      pop();
+    } on Exception catch (ex) {
       ex.logException();
     }
   }

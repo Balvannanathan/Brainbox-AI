@@ -56,11 +56,11 @@ class CustomAppbar extends StatelessWidget {
             height: 45.h,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 7.h),
-              child: Image.asset(
-                'lib/Helpers/Resources/Images/MenuIcon.png',
-                // width: 20.w,
-                // height: 3.92.h,
-              ),
+              // child: Image.asset(
+              //   'lib/Helpers/Resources/Images/MenuIcon.png',
+              //   // width: 20.w,
+              //   // height: 3.92.h,
+              // ),
             ),
           ),
         ),

@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       navigatorKey: NavigationHelper.navigatorKey,
       debugShowCheckedModeBanner: false,
       onGenerateRoute: (settings) => MaterialPageRoute(
-        builder: (context) => NavigationConfig.chatScreen.builder(null),
+        builder: (context) => NavigationConfig.rootScreen.builder(null),
       ),
     );
   }

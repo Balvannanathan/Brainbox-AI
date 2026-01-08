@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final int? extraData;
+  const ChatScreen({super.key, this.extraData});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -57,7 +58,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ChatScreenVM>(
-      create: (context) => ChatScreenVM(),
+      create: (context) => ChatScreenVM(widget.extraData),
       builder: (context, child) => GestureDetector(
         onTap: () => primaryFocus?.unfocus(),
         child: Scaffold(
@@ -71,17 +72,17 @@ class _ChatScreenState extends State<ChatScreen> {
                   children: [
                     SizedBox(height: 50.h),
 
-                    // Header
-                    CustomAppbar(onBackPress: () {}, onMenuPress: () {}),
+                    CustomAppbar(
+                      onBackPress: () => vm.navigateBack(),
+                      onMenuPress: () {},
+                    ),
 
-                    // Chat content area
                     Expanded(
-                      child: (vm.chatBO?.messages.isNotEmpty ?? false)
+                      child: (vm.chatBO?.messages?.isNotEmpty ?? false)
                           ? _chatView(vm)
                           : _emptyChat(),
                     ),
 
-                    // Message input
                     _messageInput(vm),
                   ],
                 ),
@@ -97,17 +98,17 @@ class _ChatScreenState extends State<ChatScreen> {
     return ListView.builder(
       controller: _scrollController,
       padding: EdgeInsets.symmetric(vertical: 10.h),
-      itemCount: vm.chatBO?.messages.length ?? 0,
+      itemCount: vm.chatBO?.messages?.length ?? 0,
       itemBuilder: (context, index) {
-        final message = vm.chatBO!.messages[index];
+        final message = vm.chatBO?.messages?[index];
         return Column(
           children: [
             // User question bubble
-            _userMessageBubble(message.question),
+            _userMessageBubble(message?.question ?? ''),
             SizedBox(height: 12.h),
 
             // Bot answer bubble
-            _botMessageBubble(message.answer, vm.isLoading),
+            _botMessageBubble(message?.answer ?? '', vm.isLoading),
             SizedBox(height: 20.h),
           ],
         );

@@ -1,19 +1,33 @@
+import 'package:brainbox_ai/Pages/AiAssistantScreen/AiAssistantScreen.dart';
 import 'package:brainbox_ai/Pages/ChatScreen/ChatScreen.dart';
+import 'package:brainbox_ai/Pages/EditProfileScreen/EditProfileScreen.dart';
+import 'package:brainbox_ai/Pages/HistoryScreen/HistoryScreen.dart';
+import 'package:brainbox_ai/Pages/HomeScreen/HomeScreen.dart';
+import 'package:brainbox_ai/Pages/PreferencesScreen/PreferencesScreen.dart';
+import 'package:brainbox_ai/Pages/ProfileScreen/ProfileScreen.dart';
+import 'package:brainbox_ai/Pages/RootScreen/RootScreen.dart';
 import 'package:flutter/material.dart';
 
 /// ============================
 /// 🔹 Screen Enum (Optional, for logging / analytics)
 /// ============================
 
-enum AppScreen { ChatScreen }
+enum AppScreen {
+  HistoryScreen,
+  ProfileScreen,
+  AiAssistantScreen,
+  RootScreen,
+  PreferenceScreen,
+  HomeScreen,
+  EditProfileScreen,
+  ChatScreen,
+}
 
-/// ============================
-/// 🔹 Screen Config
-/// ============================
+typedef ScreenBuilder<T> = Widget Function(T? data);
 
-class ScreenConfig {
+class ScreenConfig<T> {
   final AppScreen screen;
-  final Widget Function(dynamic data) builder;
+  final ScreenBuilder<T> builder;
 
   const ScreenConfig({required this.screen, required this.builder});
 }
@@ -48,13 +62,43 @@ class NavigationConfig {
   //   builder: (_) => ForgetPasswordScreen(),
   // );
 
-  //   static var home = ScreenConfig(
-  //     screen: AppScreen.HomeScreen,
-  //     builder: (_) => HomeScreen(),
-  //   );
+  static var rootScreen = ScreenConfig(
+    screen: AppScreen.RootScreen,
+    builder: (data) => Rootscreen(),
+  );
+
+  static var homeScreen = ScreenConfig(
+    screen: AppScreen.HomeScreen,
+    builder: (data) => HomeScreen(),
+  );
+
+  static var historyScreen = ScreenConfig(
+    screen: AppScreen.HistoryScreen,
+    builder: (data) => HistoryScreen(onBackPress: data as Function),
+  );
+
+  static var profileScreen = ScreenConfig(
+    screen: AppScreen.ProfileScreen,
+    builder: (data) => ProfileScreen(onBackPress: data as Function),
+  );
+
+  static var preferenceScreen = ScreenConfig(
+    screen: AppScreen.ProfileScreen,
+    builder: (data) => PreferencesScreen(),
+  );
+
+  static var editProfileScreen = ScreenConfig(
+    screen: AppScreen.EditProfileScreen,
+    builder: (data) => EditProfileScreen(),
+  );
+
+  static var aiAssistantScreen = ScreenConfig(
+    screen: AppScreen.AiAssistantScreen,
+    builder: (data) => AiAssistantScreen(),
+  );
 
   static var chatScreen = ScreenConfig(
     screen: AppScreen.ChatScreen,
-    builder: (_) => ChatScreen(),
+    builder: (data) => ChatScreen(extraData: data as int?),
   );
 }
